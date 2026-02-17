@@ -1328,9 +1328,6 @@ window.loginUser = function() {
 
       document.getElementById("loginPage").style.display = "none";
       document.getElementById("dashboard").style.display = "block";
-      if (typeof loadAll === "function") loadAll();
-  if (typeof updateWithdrawAccess === "function") updateWithdrawAccess();
-});
     })
     .catch((error) => alert(error.message));
 };
@@ -1362,8 +1359,6 @@ onAuthStateChanged(auth, (user) => {
   if (user && user.emailVerified) {
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
-    if (typeof loadAll === "function") loadAll();
-    if (typeof updateWithdrawAccess === "function") updateWithdrawAccess();
   }
 });
 
