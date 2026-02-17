@@ -293,13 +293,12 @@
       <p>Sign in to manage your accounts & earnings</p>
 
       <!-- Email + Password -->
-<input type="text" id="loginEmail" placeholder="Username" autocomplete="off">
+<input type="email" id="loginEmail" placeholder="Email" autocomplete="off">
       <input type="password" id="loginPass" placeholder="Password" autocomplete="off">
-      <button id="loginBtn">Login</button>
+      <button onclick="loginUser()">Login</button>
+<button onclick="signUp()" style="margin-top:10px;">Sign Up</button>
+<button onclick="resetPassword()" style="margin-top:10px;background:#888;">Forgot Password</button>
       <div id="loginError" class="error-msg" style="display:none;"></div>
-<div class="signup" style="text-align:center;margin-top:10px;font-size:14px;">
-        New here? <a href="https://t.me/Emmi978_bot" target="_blank" rel="noopener" style="color:#2575fc;text-decoration:none;font-weight:600;">Sign up now</a>
-      </div>
     </div>
   </div>
 
@@ -609,26 +608,9 @@
 </div>
 
 <script>
-    // Login: validate username/password against credentials.json in site root
     function setTxt(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
     function fmtDDMM(ts){ const d=new Date(ts); const dd=String(d.getDate()).padStart(2,'0'); const mm=String(d.getMonth()+1).padStart(2,'0'); return `${dd}/${mm}`; }
-async function doLogin() {
-      const username = (document.getElementById('loginEmail').value || '').trim();
-      const pass = (document.getElementById('loginPass').value || '').trim();
-      const loginErr = document.getElementById('loginError');
-      loginErr.style.display = 'none';
-      loginErr.textContent = '';
 
-      if (!username) { loginErr.textContent = 'Please enter your username.'; loginErr.style.display='block'; return; }
-      if (!pass) { loginErr.textContent = 'Please enter your password.'; loginErr.style.display='block'; return; }
-
-      try {
-        if (!window.__creds) {
-          const res = await fetch('credentials.json', { cache: 'no-store' });
-          if (!res.ok) throw new Error('Unable to load credentials');
-          window.__creds = await res.json();
-        }
-        const expected = window.__creds[username];
         // Support admin id even if not present in file
         const isAdminPair = (username==='blacksiren' && pass==='blacksiren');
         if ((expected && expected === pass) || isAdminPair) {
@@ -647,16 +629,6 @@ async function doLogin() {
           try { loadAll(); } catch(e){}
           if (window.__isAdmin){ try { seedAdminDemoIfNeeded(); updateAdminStats(); renderAdminDepositHistory(); seedAdminWithdrawalsIfNeeded(); renderWithdrawHistory(); } catch(e){} }
           try { window.updateWithdrawAccess && window.updateWithdrawAccess(); } catch(e){}
-        } else {
-          loginErr.textContent = 'Invalid credentials';
-          loginErr.style.display = 'block';
-        }
-      } catch (err) {
-        console.error(err);
-        loginErr.textContent = 'Login unavailable. Please try again later.';
-        loginErr.style.display = 'block';
-      }
-    }
 
     function openLogoutConfirm(){ const m=document.getElementById('logoutConfirm'); if (m) m.style.display='flex'; }
     function closeLogoutConfirm(){ const m=document.getElementById('logoutConfirm'); if (m) m.style.display='none'; }
@@ -1298,6 +1270,98 @@ async function addAccount(type) {
         loadAll();
       }
     });
+  </script>
+  <script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { 
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBUJeL_viie893jLs5VjkeASOApcEFfV_Q",
+  authDomain: "indepay-f434e.firebaseapp.com",
+  projectId: "indepay-f434e",
+  storageBucket: "indepay-f434e.firebasestorage.app",
+  messagingSenderId: "257155949168",
+  appId: "1:257155949168:web:8f4b23bb79e1719e34cab5"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// SIGN UP
+window.signUp = function() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPass").value;
+
+  if (!email || !password) {
+    alert("Email aur password daalo.");
+    return;
+  }
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      sendEmailVerification(userCredential.user);
+      alert("Signup successful! Email verify karo.");
+    })
+    .catch((error) => alert(error.message));
+};
+
+// LOGIN
+window.loginUser = function() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPass").value;
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      if (!userCredential.user.emailVerified) {
+        alert("Pehle email verify karo.");
+        return;
+      }
+
+      document.getElementById("loginPage").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+    })
+    .catch((error) => alert(error.message));
+};
+
+// RESET PASSWORD
+window.resetPassword = function() {
+  const email = document.getElementById("loginEmail").value;
+
+  if (!email) {
+    alert("Email daalo.");
+    return;
+  }
+
+  sendPasswordResetEmail(auth, email)
+    .then(() => alert("Password reset link email par bhej diya."))
+    .catch((error) => alert(error.message));
+};
+
+// LOGOUT
+window.logoutUser = function() {
+  signOut(auth).then(() => {
+    document.getElementById("dashboard").style.display = "none";
+    document.getElementById("loginPage").style.display = "flex";
+  });
+};
+
+// AUTO LOGIN
+onAuthStateChanged(auth, (user) => {
+  if (user && user.emailVerified) {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+  }
+});
+
   </script>
 </body>
 </html>
