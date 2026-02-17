@@ -293,11 +293,9 @@
       <p>Sign in to manage your accounts & earnings</p>
 
       <!-- Email + Password -->
- <input type="text" id="email" placeholder="Email" autocomplete="off">
-      <input type="password" id="password" placeholder="Password" autocomplete="off">
-      <button id="loginBtn" onclick="login()">Login</button>
-      <button onclick="signup()" style="margin-top:10px;">Create Account</button>
-<button onclick="changePassword()" style="margin-top:10px;">Change Password</button>
+<input type="text" id="loginEmail" placeholder="Username" autocomplete="off">
+      <input type="password" id="loginPass" placeholder="Password" autocomplete="off">
+      <button id="loginBtn">Login</button>
       <div id="loginError" class="error-msg" style="display:none;"></div>
 <div class="signup" style="text-align:center;margin-top:10px;font-size:14px;">
         New here? <a href="https://t.me/Emmi978_bot" target="_blank" rel="noopener" style="color:#2575fc;text-decoration:none;font-weight:600;">Sign up now</a>
@@ -1301,51 +1299,5 @@ async function addAccount(type) {
       }
     });
   </script>
-  <script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updatePassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBUJeL_viie893jLs5VjkeASOApcEFfV_Q",
-  authDomain: "indepay-f434e.firebaseapp.com",
-  projectId: "indepay-f434e",
-  storageBucket: "indepay-f434e.firebasestorage.app",
-  messagingSenderId: "257155949168",
-  appId: "1:257155949168:web:8f4b23bb79e1719e34cab5",
-  measurementId: "G-F84DCH3ETZ"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-window.signup = function() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  createUserWithEmailAndPassword(auth, email, password)
-  .then(() => alert("Account Created Successfully"))
-  .catch(e => alert(e.message));
-}
-
-window.login = function() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  signInWithEmailAndPassword(auth, email, password)
-  .then(() => alert("Login Successful"))
-  .catch(e => alert(e.message));
-}
-
-window.changePassword = function() {
-  const user = auth.currentUser;
-  const newPass = prompt("Enter New Password");
-
-  updatePassword(user, newPass)
-  .then(() => alert("Password Updated"))
-  .catch(e => alert(e.message));
-}
-
-</script>
 </body>
 </html>
