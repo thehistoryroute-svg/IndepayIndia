@@ -1328,7 +1328,16 @@ window.loginUser = function() {
 
       document.getElementById("loginPage").style.display = "none";
       document.getElementById("dashboard").style.display = "block";
-    })
+      setTimeout(() => {
+    try {
+      if (window.loadAll) window.loadAll();
+      if (window.updateWithdrawAccess) window.updateWithdrawAccess();
+    } catch(e) {
+      console.log("Dashboard init error:", e);
+    }
+  }, 200);
+
+});
     .catch((error) => alert(error.message));
 };
 
@@ -1359,6 +1368,14 @@ onAuthStateChanged(auth, (user) => {
   if (user && user.emailVerified) {
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
+    setTimeout(() => {
+      try {
+        if (window.loadAll) window.loadAll();
+        if (window.updateWithdrawAccess) window.updateWithdrawAccess();
+      } catch(e) {
+        console.log("Auto dashboard error:", e);
+      }
+    }, 200);
   }
 });
 
