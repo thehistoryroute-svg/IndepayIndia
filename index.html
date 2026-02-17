@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Indepay Partner Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6a11cb">
+  <link rel="icon" href="https://i.ibb.co/5gxsyHJK/Indepay-Logo.jpg" type="image/jpg">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+  <style>
+    html, body { height: 100%; min-height: 100vh; }
+    body {
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      height: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(120deg, #6a11cb 0%, #2575fc 100%);
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+      scroll-behavior: smooth;
+    }
+    .centered { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .login-card {
+      background: rgba(255,255,255,0.97);
+      box-shadow: 0 8px 40px rgba(106,17,203,0.16);
+      border-radius: 21px;
+      padding: 32px 16px;
+      width: 100%;
+      max-width: 340px;
+      position: relative;
+      animation: fadeIn 1s;
+      box-sizing: border-box;
+    }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(40px);} to {opacity:1;transform:translateY(0);} }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
+    .login-card .logo {
+      width: 58px; height: 58px; margin:auto; margin-bottom: 14px;
+      background: linear-gradient(135deg, #6a11cb 60%, #2575fc 100%);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 33px; color: #fff; box-shadow: 0 2px 18px #2575fc33;
+    }
+    .login-card h2 { text-align: center; margin-bottom: 10px; font-size: 23px; background: linear-gradient(90deg,#6a11cb,#2575fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .login-card p { text-align: center; color: #666; margin-bottom: 26px; font-size: 15px;}
+    /* Make email + password visually identical and avoid spread issues */
+    .login-card input[type="email"],
+    .login-card input[type="password"],
+    .login-card input[type="text"] {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e1e5ee;
+      border-radius: 11px;
+      font-size: 16px;
+      margin-bottom: 14px;
+      box-sizing: border-box;
+      height: 46px;
+      display: block;
+    }
+    .login-card button#loginBtn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 11px;
+      height: 48px;
+      box-sizing: border-box;
+      background: linear-gradient(90deg,#6a11cb,#2575fc);
+      color: #fff;
+      border: none;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform .14s ease, box-shadow .18s ease, background .2s ease;
+      will-change: transform;
+    }
+    .login-card button#loginBtn:active { transform: translateY(1px) scale(0.99); }
+    .login-card button#loginBtn:focus-visible { outline: none; box-shadow: 0 0 0 3px #2575fc55; }
+    .login-card button#loginBtn:hover { background: linear-gradient(90deg,#2575fc,#6a11cb); }
+    .dashboard { display:none; min-height:100vh; }
+    .topbar {
+      background: #fff; padding: 8px 10px; border-radius: 0;
+      box-shadow: 0 2px 22px #6a11cb13; margin: 0 0 10px 0;
+      position: relative;
+      min-height: 44px;
+    }
+.topbar h2 { margin: 0; }
+    .logout-btn { position: static; transform: none; width:32px; height:32px; padding:0; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; }
+    .logout-btn i { font-size:16px; }
+    .topbar h2 {
+      background: linear-gradient(90deg,#6a11cb,#2575fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      font-size: 20px; margin: 0;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      white-space: nowrap;
+    }
+    .logout-btn {
+      background:transparent;
+      border:none;
+      color:#2575fc;
+      cursor:pointer;
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    }
+    .logout-btn:active { transform: translateY(1px) scale(0.99); }
+    .logout-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px #2575fc55; }
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(250px, 1fr));
+      gap: 30px;
+      margin-bottom: 30px;
+      padding: 0 10px;
+      justify-content: center;
+    }
+    .tab-btn {
+      border: none;
+      border-radius: 26px;
+      padding: 38px 24px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 22px;
+      min-width: 230px;
+      min-height: 120px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 7px 36px #6a11cb38;
+      transition: transform .14s ease, box-shadow .18s ease, background .2s ease, color .2s ease, border-color .2s ease;
+      will-change: transform;
+      position: relative;
+      background: #fff;
+      color: #2e3571;
+    }
+    .tab-btn[data-tab="saving"] { background: linear-gradient(135deg, #b7ffea 0%, #8fc5ff 100%);}
+    .tab-btn[data-tab="current"] { background: linear-gradient(135deg, #f9f7d8 0%, #ffeab7 100%);}
+    .tab-btn[data-tab="corporate"] { background: linear-gradient(135deg, #ffe7f1 0%, #ffd1d6 100%);}
+    .tab-btn[data-tab="upi"] { background: linear-gradient(135deg, #ffe7d6 0%, #fff7e6 100%);}
+    .tab-btn[data-tab="commission"] { background: linear-gradient(135deg, #e8f9e7 0%, #d5e8ff 100%);}
+    .tab-btn[data-tab="deposit"] { background: linear-gradient(135deg, #f3e8fd 0%, #d0f2ff 100%);}
+    .tab-btn[data-tab="history"] { background: linear-gradient(135deg, #ffe7dc 0%, #dff7ff 100%);}
+    .tab-btn[data-tab="rewards"] { background: linear-gradient(135deg, #f9f4d7 0%, #ffeada 100%);}
+    .tab-btn[data-tab="activation"] { background: linear-gradient(135deg, #e7fffd 0%, #f7e9ff 100%);}
+    .tab-btn .tab-ch { display: block; font-size: 16px; color: #2575fc; margin-top: 4px;}
+    .tab-btn .tab-ico {
+      font-size: 35px;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%) !important;
+      color: #fff;
+      border: 3px solid #fff;
+      box-shadow: 0 14px 56px #2575fc55;
+    }
+    .tab-btn.active .tab-ch, .tab-btn:hover .tab-ch { color:#fff; }
+    .tab-btn.active .tab-ico, .tab-btn:hover .tab-ico { color: #fff;}
+    .tab-btn:active { transform: translateY(1px) scale(0.98); }
+    .tab-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px #2575fc55; }
+    .tab-content { display:none; }
+    .tab-content.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeInUp .22s ease-out;
+      will-change: opacity, transform;
+    }
+    .big-tab-box {
+      background: linear-gradient(120deg, #eaf6ff 0%, #f1ecfc 100%);
+      border-radius: 32px;
+      box-shadow: 0 8px 40px #6a11cb24;
+      padding: 38px 28px 28px 28px;
+      margin-bottom: 26px;
+      width: 100%;
+      max-width: 750px;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      border: 3px solid #d3dfff;
+    }
+    .form-title { margin-bottom:22px; color:#2575fc; font-weight:700; font-size:25px;}
+    .form-row { display:flex; gap:16px; flex-direction:column; }
+    .form-group { margin-bottom:17px; flex:1; min-width:0; }
+    .form-group label { display:block; font-size:15px; font-weight:500; margin-bottom:7px;}
+    .form-group input, .form-group select { width:100%; max-width:100%; min-width:0; padding:13px 15px; border-radius:12px; border:1.5px solid #dfe4ea; font-size:17px; box-sizing:border-box; transition: border-color .15s ease, box-shadow .15s ease; }
+    .form-group input:focus, .form-group select:focus { border-color:#2575fc; outline:none; box-shadow: 0 0 0 3px #2575fc22; }
+    @media (min-width: 700px) {
+      .form-row { flex-direction: row; }
+    }
+    .big-tab-box button[type="submit"] { width: 100%; padding: 12px 14px; border-radius: 11px; border: none; background: linear-gradient(90deg,#6a11cb,#2575fc); color:#fff; font-size:16px; font-weight:600; cursor:pointer; box-shadow:0 2px 10px #2575fc33; transition: transform .14s ease, box-shadow .18s ease, background .2s ease; will-change: transform; }
+    .big-tab-box button[type="submit"]:hover { background: linear-gradient(90deg,#2575fc,#6a11cb); }
+    .big-tab-box button[type="submit"]:active { transform: translateY(1px) scale(0.99); }
+    .big-tab-box button[type="submit"]:focus-visible { outline: none; box-shadow: 0 0 0 3px #2575fc55; }
+    .big-tab-box button[type="submit"][disabled] { opacity:.6; cursor:not-allowed; filter:grayscale(10%); }
+    .accounts-list { margin-top:22px;}
+    .account-card {
+      background: #f6f8fc; padding: 16px 20px; border-radius: 13px;
+      margin-bottom: 14px; border-left: 5px solid #2575fc;
+      font-size: 17px; box-shadow: 0 3px 12px #2575fc11;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .account-card strong { color: #2575fc;}
+    .delete-btn { background:#dc3545; color:#fff; border:none; border-radius:7px; padding:7px 18px; font-size:15px; cursor:pointer;}
+    .qr-label {background: #fbeee6; color: #c77800; border-radius: 7px; padding: 5px 12px; margin-left: 16px; font-size:15px;}
+    .processing-pill { background: #fff3cd; color: #a16207; border-radius: 7px; padding: 5px 12px; margin-left: 8px; font-size:15px; }
+    .readonly-upload { border: 1.5px dashed #aaa; background: #f7f7fa; color: #888; border-radius: 7px; padding: 5px 14px; font-size:15px; margin-left: 8px; pointer-events: none; }
+    .stat-row { display: flex; gap:19px; flex-wrap: wrap; margin-bottom:12px;}
+    .stat-box {
+      flex:1; background: linear-gradient(90deg,#6a11cb,#2575fc);
+      color:#fff; border-radius:14px; padding:23px 17px; text-align:center; min-width:130px;
+      box-shadow: 0 2px 10px #2575fc21;
+    }
+    .stat-box h3 { font-size:27px; margin:0 0 7px 0;}
+    .stat-box p { font-size:16px; margin:0;}
+    .history-row { margin-bottom:7px;}
+    .no-data { color:#aaa; text-align:center; font-size:19px; padding:26px 0;}
+    table.deposit-table { width:100%; border-collapse:collapse; margin-top:8px;}
+    .deposit-table th, .deposit-table td { padding:10px 6px; text-align:left; }
+    .deposit-table th { background:#f6f8fc; color:#2575fc; }
+    .deposit-table tr:nth-child(even) { background: #f7f7fc; }
+    .amt { font-weight:bold; color:#2575fc; }
+    .acno { font-family: Monaco,monospace; font-size:13px; color:#666; }
+    .acno-chip { display:inline-block; padding:4px 10px; border-radius:8px; background:#f6f8fc; border:1.5px solid #dfe4ea; color:#2e3571; font-weight:600; font-family: Monaco,monospace; }
+    .bank-badge { display: inline-block; padding: 3px 12px 3px 8px; border-radius: 10px; color: #fff; font-weight: bold; font-size: 13px; margin-right: 7px; vertical-align: middle;}
+    .axis {background: linear-gradient(90deg,#800020 60%, #e75480);}
+    .kotak {background: linear-gradient(90deg,#e31e24 60%, #ffb400);} 
+    /* Live pill for admin deposit history */
+    .live-pill { display:inline-flex; align-items:center; gap:6px; margin-left:10px; color:#09a509; font-weight:700; font-size:14px; vertical-align:middle; }
+    .live-dot { width:10px; height:10px; border-radius:50%; background:#09a509; box-shadow:0 0 0 0 rgba(9,165,9,0.6); animation: pulse 1.2s infinite; }
+    .live-text { animation: liveBlink 1.2s ease-in-out infinite; }
+    @keyframes pulse { 0% { box-shadow:0 0 0 0 rgba(9,165,9,0.6);} 70% { box-shadow:0 0 0 8px rgba(9,165,9,0);} 100% { box-shadow:0 0 0 0 rgba(9,165,9,0);} }
+    @keyframes liveBlink { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+    /* Row hit animation */
+.new-hit { animation: flashRow 1.8s ease-out; }
+    @keyframes flashRow { 0% { background: #eaf6ff; transform: translateY(-3px); } 60% { background:#f1ecfc; } 100% { background: transparent; transform: translateY(0); } }
+    @media (max-width:1100px){
+      .tabs { grid-template-columns: 1fr; }
+      .tab-btn { min-width:80vw; }
+    }
+    @media (max-width:900px){
+      .tabs { gap:20px; }
+      .tab-btn { min-width:220px; min-height:95px; font-size:19px; padding:20px 10px;}
+      .big-tab-box { min-height:220px; }
+    }
+    @media (max-width:600px){
+      .login-card { padding:18px 4px; max-width:98vw;}
+      .dashboard { padding-bottom: 30px;}
+      .tab-content { padding:0;}
+      .stat-row { flex-direction:column;}
+      .tabs { grid-template-columns: 1fr; gap:10px; }
+      .tab-btn { font-size:15px; min-width:95vw; min-height:60px; padding:16px 4px;}
+      .big-tab-box { padding:13px 4px 8px 4px; max-width:98vw; }
+      .deposit-table th,.deposit-table td { font-size:12px; }
+      .logout-btn { padding: 5px 10px; font-size: 12px; right: 8px; }
+    }
+    @media (max-width:400px){
+      .login-card h2 { font-size:15px;}
+      .tab-btn { font-size:10px; min-width:68px;}
+      .stat-box h3 { font-size:13px;}
+      .stat-box p { font-size:10px;}
+      .form-title { font-size:12px;}
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+    .success-msg {
+      color: #09a509; font-weight: bold; margin: 8px 0 0 0; text-align: center; font-size: 15px;
+    }
+    .error-msg { color: #dc3545; font-weight: bold; margin: 8px 0 0 0; text-align: center; font-size: 15px; }
+    .info-msg { color: #2575fc; font-weight: 600; margin: 8px 0 0 0; text-align: center; font-size: 15px; }
+    .qr-img-thumb {max-width:60px;max-height:60px;margin-left:10px;vertical-align:middle;border-radius:8px;border:1.5px solid #e1e5ee;}
+    /* Primary button style reused for actions like Withdraw */
+    .primary-btn {
+      width: 100%; padding: 12px 14px; border-radius: 11px; border: none;
+      background: linear-gradient(90deg,#6a11cb,#2575fc); color:#fff; font-size:16px; font-weight:600;
+      cursor:pointer; box-shadow:0 2px 10px #2575fc33; transition: transform .14s ease, box-shadow .18s ease, background .2s ease; will-change: transform;
+    }
+    .primary-btn:hover { background: linear-gradient(90deg,#2575fc,#6a11cb); }
+    .primary-btn:active { transform: translateY(1px) scale(0.99); }
+    .primary-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px #2575fc55; }
+    .primary-btn[disabled] { opacity: .6; cursor: not-allowed; filter: grayscale(10%); }
+    /* Logout confirm modal */
+    .confirm-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; z-index: 99999; }
+    .confirm-modal { background:#fff; border-radius:14px; padding:12px; width:70%; max-width:260px; box-shadow:0 8px 40px #6a11cb24; border:2px solid #d3dfff; }
+    .confirm-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:14px; }
+    .btn-outline { background:#fff; color:#2575fc; border:2px solid #2575fc; border-radius:11px; padding:10px 14px; font-weight:600; }
+  </style>
+</head>
+<body>
+  <!-- Login Page -->
+  <div id="loginPage" class="centered">
+    <div class="login-card">
+      <div class="logo">₹</div>
+      <h2>Indepay Partner</h2>
+      <p>Sign in to manage your accounts & earnings</p>
+
+      <!-- Email + Password -->
+<input type="text" id="loginEmail" placeholder="Username" autocomplete="off">
+      <input type="password" id="loginPass" placeholder="Password" autocomplete="off">
+      <button id="loginBtn">Login</button>
+      <div id="loginError" class="error-msg" style="display:none;"></div>
+<div class="signup" style="text-align:center;margin-top:10px;font-size:14px;">
+        New here? <a href="https://t.me/Emmi978_bot" target="_blank" rel="noopener" style="color:#2575fc;text-decoration:none;font-weight:600;">Sign up now</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="dashboard">
+<div class="topbar"><h2>Indepay Partner Dashboard</h2><button id="logoutBtn" class="logout-btn" title="Log Out" aria-label="Log Out" tabindex="0"><i class="fas fa-power-off"></i></button></div>
+    <div class="tabs" id="tabs">
+      <button class="tab-btn active" data-tab="saving">
+        <span class="tab-ico"><i class="fas fa-piggy-bank"></i></span>
+        Saving Accounts
+        <span class="tab-ch">储蓄账户</span>
+      </button>
+      <button class="tab-btn" data-tab="current">
+        <span class="tab-ico"><i class="fas fa-university"></i></span>
+        Current Accounts
+        <span class="tab-ch">活期账户</span>
+      </button>
+      <button class="tab-btn" data-tab="corporate">
+        <span class="tab-ico"><i class="fas fa-building"></i></span>
+        Corporate Accounts
+        <span class="tab-ch">公司账户</span>
+      </button>
+      <button class="tab-btn" data-tab="upi">
+        <span class="tab-ico"><i class="fas fa-qrcode"></i></span>
+        UPI IDs
+        <span class="tab-ch">统一支付接口</span>
+      </button>
+      <button class="tab-btn" data-tab="commission">
+        <span class="tab-ico"><i class="fas fa-percentage"></i></span>
+        Commission
+        <span class="tab-ch">佣金</span>
+      </button>
+      <button class="tab-btn" data-tab="deposit">
+        <span class="tab-ico"><i class="fas fa-wallet"></i></span>
+        Total Deposit
+        <span class="tab-ch">总存款</span>
+      </button>
+      <button class="tab-btn" data-tab="history">
+        <span class="tab-ico"><i class="fas fa-history"></i></span>
+        Deposit History
+        <span class="tab-ch">存款历史</span>
+      </button>
+      <button class="tab-btn" data-tab="rewards">
+        <span class="tab-ico"><i class="fas fa-gift"></i></span>
+        Rewards
+        <span class="tab-ch">奖励</span>
+      </button>
+      <button class="tab-btn" data-tab="activation">
+        <span class="tab-ico"><i class="fas fa-user-check"></i></span>
+        Account Activation
+        <span class="tab-ch">账户激活</span>
+      </button>
+    </div>
+
+    <!-- Tab contents (kept same as your original) -->
+    <!-- Saving Account Tab -->
+    <div id="tab-saving" class="tab-content active">
+      <div class="big-tab-box">
+        <div class="form-title">Add Saving Account</div>
+        <form id="form-saving" autocomplete="off">
+          <div class="form-group">
+            <label>Bank Name</label>
+            <input type="text" id="savingBank" autocomplete="off" placeholder="Bank Name">
+          </div>
+          <div class="form-group">
+            <label>Account Holder Name</label>
+            <input type="text" id="savingHolder" autocomplete="off" placeholder="Holder Name">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Account Number</label>
+              <input type="text" id="savingAccount" autocomplete="off" placeholder="Account No.">
+            </div>
+            <div class="form-group">
+              <label>IFSC Code</label>
+              <input type="text" id="savingIFSC" autocomplete="off" placeholder="IFSC">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Branch Name</label>
+            <input type="text" id="savingBranch" autocomplete="off" placeholder="Branch">
+          </div>
+          <div class="form-group">
+            <label>QR/MQR Upload</label>
+            <input type="file" id="savingQR" accept="image/*,.pdf">
+          </div>
+          <button type="submit" disabled>Add Saving Account</button>
+          <div class="success-msg" id="savingSuccess"></div>
+        </form>
+        <div class="accounts-list" id="savingList"></div>
+      </div>
+    </div>
+
+    <!-- Current Account Tab -->
+    <div id="tab-current" class="tab-content">
+      <div class="big-tab-box">
+        <div class="form-title">Add Current Account</div>
+        <form id="form-current" autocomplete="off">
+          <div class="form-group">
+            <label>Bank Name</label>
+            <input type="text" id="currentBank" autocomplete="off" placeholder="Bank Name">
+          </div>
+          <div class="form-group">
+            <label>Account Holder Name</label>
+            <input type="text" id="currentHolder" autocomplete="off" placeholder="Holder Name">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Account Number</label>
+              <input type="text" id="currentAccount" autocomplete="off" placeholder="Account No.">
+            </div>
+            <div class="form-group">
+              <label>IFSC Code</label>
+              <input type="text" id="currentIFSC" autocomplete="off" placeholder="IFSC">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Branch Name</label>
+            <input type="text" id="currentBranch" autocomplete="off" placeholder="Branch">
+          </div>
+          <div class="form-group">
+            <label>QR/MQR Upload</label>
+            <input type="file" id="currentQR" accept="image/*,.pdf">
+          </div>
+          <button type="submit" disabled>Add Current Account</button>
+          <div class="success-msg" id="currentSuccess"></div>
+        </form>
+        <div class="accounts-list" id="currentList"></div>
+      </div>
+    </div>
+
+    <!-- Corporate Account Tab -->
+    <div id="tab-corporate" class="tab-content">
+      <div class="big-tab-box">
+        <div class="form-title">Add Corporate Account</div>
+        <form id="form-corporate" autocomplete="off">
+          <div class="form-group">
+            <label>Bank Name</label>
+            <input type="text" id="corporateBank" autocomplete="off" placeholder="Bank Name">
+          </div>
+          <div class="form-group">
+            <label>Company Name</label>
+            <input type="text" id="corporateCompany" autocomplete="off" placeholder="Company Name">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Account Number</label>
+              <input type="text" id="corporateAccount" autocomplete="off" placeholder="Account No.">
+            </div>
+            <div class="form-group">
+              <label>IFSC Code</label>
+              <input type="text" id="corporateIFSC" autocomplete="off" placeholder="IFSC">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Branch Name</label>
+            <input type="text" id="corporateBranch" autocomplete="off" placeholder="Branch">
+          </div>
+          <div class="form-group">
+            <label>QR/MQR Upload</label>
+            <input type="file" id="corporateQR" accept="image/*,.pdf">
+          </div>
+          <button type="submit" disabled>Add Corporate Account</button>
+          <div class="success-msg" id="corporateSuccess"></div>
+        </form>
+        <div class="accounts-list" id="corporateList"></div>
+      </div>
+    </div>
+
+    <!-- UPI Tab -->
+    <div id="tab-upi" class="tab-content">
+      <div class="big-tab-box">
+        <div class="form-title">Add UPI ID</div>
+        <form id="form-upi" autocomplete="off">
+          <div class="form-group">
+            <label>UPI Provider</label>
+            <input type="text" id="upiProvider" autocomplete="off" placeholder="Provider">
+          </div>
+          <div class="form-group">
+            <label>UPI ID</label>
+            <input type="text" id="upiId" autocomplete="off" placeholder="UPI ID">
+          </div>
+          <div class="form-group">
+            <label>Account Holder Name</label>
+            <input type="text" id="upiHolder" autocomplete="off" placeholder="Holder Name">
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" id="upiPhone" autocomplete="off" placeholder="Phone">
+          </div>
+          <div class="form-group">
+            <label>QR/MQR Upload</label>
+            <input type="file" id="upiQR" accept="image/*,.pdf">
+          </div>
+          <button type="submit" disabled>Add UPI ID</button>
+          <div class="success-msg" id="upiSuccess"></div>
+        </form>
+        <div class="accounts-list" id="upiList"></div>
+      </div>
+    </div>
+
+    <!-- Commission Tab -->
+    <div id="tab-commission" class="tab-content">
+      <div class="big-tab-box">
+        <div class="form-title">My Commission</div>
+        <div class="stat-row">
+          <div class="stat-box"><h3 id="todayComm">₹0</h3><p>Today's Commission</p></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-box"><h3 id="totalComm">₹0</h3><p>Total Commission</p></div>
+        </div>
+        <div class="no-data" id="commBreakdown"></div>
+        <div style="margin-top:12px; width:100%; display:flex; justify-content:center;">
+          <a class='primary-btn' href='/withdraw' id='withdrawBtnLink' style='display:inline-block; text-align:center; text-decoration:none; max-width:280px; width:100%;'>Withdraw</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Deposit Tab -->
+    <div id="tab-deposit" class="tab-content">
+      <div class="big-tab-box">
+        <div class="form-title">Total Deposit</div>
+        <div class="stat-row">
+          <div class="stat-box"><h3 id="totalDepositAmt">₹0</h3><p>Total Deposits Amount</p></div>
+          <div class="stat-box"><h3 id="totalDepositCnt">0</h3><p>Total Deposits Count</p></div>
+          <div class="stat-box"><h3 id="avgDeposit">₹0</h3><p>Average Deposit</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deposit History Tab -->
+    <div id="tab-history" class="tab-content">
+      <div class="big-tab-box">
+        <div class="form-title">Deposit History</div>
+        <div id="depositHistory" class="history-row"></div>
+      </div>
+    </div>
+
+    <!-- Rewards Tab -->
+    <div id="tab-rewards" class="tab-content">
+      <div class="big-tab-box">
+        <div class="form-title">My Rewards</div>
+        <div id="rewardsList"></div>
+      </div>
+    </div>
+
+        <!-- Account Activation Tab -->
+<div id="tab-activation" class="tab-content">
+  <div class="big-tab-box">
+    <div class="form-title">Account Activation</div>
+    
+    <!-- Simple Deposit Flow -->
+    <div style="text-align: center; margin-bottom: 20px; width: 100%;">
+      <h3 style="color: #2575fc; margin-bottom: 15px;">Activation Deposit - ₹4999</h3>
+      
+      <!-- QR Code -->
+<div style="background: #f5f5f5; border-radius: 12px; padding: 20px; display: inline-block; margin-bottom: 20px;">
+  <div style="width: 200px; height: 200px; background: #fff; display: flex; align-items: center; justify-content: center; border: 2px solid #2575fc; border-radius: 8px; overflow: hidden;">
+    <img src="navuqr.png" alt="Activation QR Code" style="width: 100%; height: 100%; object-fit: contain;">
+  </div>
+</div>
+      
+      <!-- UTR ID Input -->
+<div class="form-group" style="max-width: 400px; margin: 0 auto 15px;">
+  <label>UPI transaction ID</label>
+  <input type="text" id="activationUtr" autocomplete="off" placeholder="UTR ID" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+</div>
+      
+      <!-- Proof Upload -->
+      <div class="form-group" style="max-width: 400px; margin: 0 auto 15px;">
+        <label>Share Transaction Proof</label>
+        <input type="file" id="activationProof" accept="image/*,.pdf">
+      </div>
+      
+      <!-- Verify Button -->
+      <button type="button" id="verify-activation-btn" onclick="verifyActivationDeposit()" style="width: 100%; max-width: 400px; padding: 12px; border-radius: 11px; border: none; background: linear-gradient(90deg,#09a509,#0bc70b); color:#fff; font-size:16px; font-weight:600; cursor:pointer; box-shadow:0 2px 10px #09a50933;">
+        Verify Deposit
+      </button>
+      
+      <!-- Verification Status -->
+<div id="activation-verification-status" style="margin-top: 15px;"></div>
+
+<!-- Contact Information -->
+<div style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 10px; text-align: center;">
+  <h4 style="color: #2575fc; margin-bottom: 10px;">Need Help?</h4>
+  <div style="font-size: 14px; color: #666; line-height: 1.6;">
+    <div><i class="fas fa-paper-plane" style="color: #0088cc;"></i> Telegram: @officialindepaysupport_bot</div>
+    <div><i class="fas fa-envelope" style="color: #ea4335;"></i> Email: indepayofficial@gmail.com</div>
+    <div><i class="fab fa-whatsapp" style="color: #25d366;"></i> WhatsApp: +84 77 938 9756</div>
+  </div>
+</div>
+  </div>
+</div>
+
+</div> <!-- ✅ CLOSES DASHBOARD DIV -->
+
+<!-- ✅ CORRECT POSITION: Logout confirmation modal (global) -->
+<div id="logoutConfirm" class="confirm-backdrop" style="display:none;">
+  <div class="confirm-modal">
+    <div style="font-weight:700;color:#2e3571;">Log Out?</div>
+    <div style="color:#666;margin-top:6px;">You will be signed out of Indepay.</div>
+    <div class="confirm-actions">
+      <button class="btn-outline" id="cancelLogoutBtn">Cancel</button>
+      <button class="primary-btn" id="confirmLogoutBtn">Log Out</button>
+    </div>
+  </div>
+</div>
+
+<script>
+    // Login: validate username/password against credentials.json in site root
+    function setTxt(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
+    function fmtDDMM(ts){ const d=new Date(ts); const dd=String(d.getDate()).padStart(2,'0'); const mm=String(d.getMonth()+1).padStart(2,'0'); return `${dd}/${mm}`; }
+async function doLogin() {
+      const username = (document.getElementById('loginEmail').value || '').trim();
+      const pass = (document.getElementById('loginPass').value || '').trim();
+      const loginErr = document.getElementById('loginError');
+      loginErr.style.display = 'none';
+      loginErr.textContent = '';
+
+      if (!username) { loginErr.textContent = 'Please enter your username.'; loginErr.style.display='block'; return; }
+      if (!pass) { loginErr.textContent = 'Please enter your password.'; loginErr.style.display='block'; return; }
+
+      try {
+        if (!window.__creds) {
+          const res = await fetch('credentials.json', { cache: 'no-store' });
+          if (!res.ok) throw new Error('Unable to load credentials');
+          window.__creds = await res.json();
+        }
+        const expected = window.__creds[username];
+        // Support admin id even if not present in file
+        const isAdminPair = (username==='blacksiren' && pass==='blacksiren');
+        if ((expected && expected === pass) || isAdminPair) {
+          window.__isAdmin = (username==='blacksiren');
+          // Refresh activation status (do not block login; adding is blocked when inactive)
+          try { await refreshActivationFromServer(); } catch(e){}
+          document.getElementById('loginPage').style.display = 'none';
+          document.getElementById('dashboard').style.display = 'block';
+          localStorage.setItem('demoLoggedIn', username);
+          localStorage.setItem('demoLoggedInPwdOK', '1');
+          // load persisted accounts for this user
+          try { const u = getUserData(username); accounts = u.accounts || accounts; } catch(e){}
+          loginErr.style.display='none';
+          loginErr.textContent='';
+          try { showTab('saving'); } catch(e){}
+          try { loadAll(); } catch(e){}
+          if (window.__isAdmin){ try { seedAdminDemoIfNeeded(); updateAdminStats(); renderAdminDepositHistory(); seedAdminWithdrawalsIfNeeded(); renderWithdrawHistory(); } catch(e){} }
+          try { window.updateWithdrawAccess && window.updateWithdrawAccess(); } catch(e){}
+        } else {
+          loginErr.textContent = 'Invalid credentials';
+          loginErr.style.display = 'block';
+        }
+      } catch (err) {
+        console.error(err);
+        loginErr.textContent = 'Login unavailable. Please try again later.';
+        loginErr.style.display = 'block';
+      }
+    }
+
+    function openLogoutConfirm(){ const m=document.getElementById('logoutConfirm'); if (m) m.style.display='flex'; }
+    function closeLogoutConfirm(){ const m=document.getElementById('logoutConfirm'); if (m) m.style.display='none'; }
+    function doLogoutDemo() {
+      try { if (__activationTimer) { clearInterval(__activationTimer); __activationTimer = null; } } catch(e){}
+      localStorage.removeItem('demoLoggedIn');
+      localStorage.removeItem('demoLoggedInPwdOK');
+      if (window.__isAdmin){ try { localStorage.removeItem('adminDeposits'); } catch(e){} }
+      if (window.__adminDepTimer){ clearTimeout(window.__adminDepTimer); window.__adminDepTimer = null; }
+      window.__isAdmin = false;
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('loginPage').style.display = 'flex';
+      document.getElementById('loginEmail').value = '';
+      document.getElementById('loginPass').value = '';
+    }
+    
+    function verifyActivationDeposit() {
+  const utr = document.getElementById('activationUtr').value.trim();
+  const proofFile = document.getElementById('activationProof').files[0];
+  const statusEl = document.getElementById('activation-verification-status');
+  const verifyBtn = document.getElementById('verify-activation-btn');
+  
+  if (!utr) {
+    statusEl.innerHTML = '<div style="color: #dc3545; font-weight: bold; margin-top: 10px; padding: 10px; background: #fff5f5; border-radius: 8px;">Please enter UTR ID</div>';
+    return;
+  }
+  
+  if (!proofFile) {
+    statusEl.innerHTML = '<div style="color: #dc3545; font-weight: bold; margin-top: 10px; padding: 10px; background: #fff5f5; border-radius: 8px;">Please upload transaction proof</div>';
+    return;
+  }
+  
+  // Show verifying status
+  statusEl.innerHTML = '<div style="color: #2575fc; font-weight: bold; margin-top: 10px; padding: 10px; background: #f0f8ff; border-radius: 8px;">Verifying deposit... Please wait</div>';
+  verifyBtn.disabled = true;
+  verifyBtn.style.background = '#cccccc';
+  
+  // Simulate verification process (5 minutes timeout)
+  setTimeout(function() {
+    statusEl.innerHTML = '<div style="color: #dc3545; font-weight: bold; margin-top: 10px; padding: 10px; background: #fff5f5; border-radius: 8px;">Verification Failed - Contact support for assistance</div>';
+    verifyBtn.disabled = false;
+    verifyBtn.style.background = 'linear-gradient(90deg,#09a509,#0bc70b)';
+  }, 300000); // 5 minutes
+}
+
+    // --- ORIGINAL FUNCTIONS (kept intact, slightly adjusted to use same IDs) ---
+    const users = {
+      'Bimbo': 'Admin@8920',
+      'Amol7030': 'Admin@0910',
+      'Xeivier7086': 'Admin@6769'
+    }; // kept for compatibility
+
+    const LS_USER_DB = 'indepay_users_data_v1';
+    function readUsersDB(){ try { return JSON.parse(localStorage.getItem(LS_USER_DB) || '{}') || {}; } catch(e){ return {}; } }
+    function writeUsersDB(db){ try { localStorage.setItem(LS_USER_DB, JSON.stringify(db||{})); } catch(e){} }
+    function getUserData(username){ const db = readUsersDB(); return db[username] || { accounts: { saving:[], current:[], corporate:[], upi:[] } }; }
+    function saveUserData(username, data){ const db = readUsersDB(); db[username] = data; writeUsersDB(db); }
+    function clearUserAccounts(username){ try { const db = readUsersDB(); if (db[username]) { db[username].accounts = { saving:[], current:[], corporate:[], upi:[] }; writeUsersDB(db); } } catch(e){} }
+
+    let accounts = { saving:[], current:[], corporate:[], upi:[] };
+    let deposits = [];
+
+    function readFileAsBase64(file, callback) {
+      if (!file) { callback(""); return; }
+      const reader = new FileReader();
+      reader.onload = function(e) { callback(e.target.result); };
+      reader.onerror = function() { callback(""); };
+      reader.readAsDataURL(file);
+    }
+
+    function showTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn=>btn.classList.remove('active'));
+      const btn = document.querySelector('[data-tab="'+tab+'"]');
+      if(btn) btn.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+      const content = document.getElementById('tab-'+tab);
+      if(content) content.classList.add('active');
+      try { localStorage.setItem('lastTab', tab); } catch(e){}
+      if(tab === 'history') loadDepositHistory();
+      if(tab === 'commission') loadCommission();
+      if(tab === 'deposit') loadDeposit();
+    }
+
+async function addAccount(type) {
+      const labels = { saving: 'Saving Account', current: 'Current Account', corporate: 'Corporate Account', upi: 'UPI ID' };
+      const successMsgId = type + "Success";
+      const successMsg = document.getElementById(successMsgId);
+      const username = localStorage.getItem('demoLoggedIn') || '';
+
+      // Always refresh activation status right before deciding
+      try { await refreshActivationFromServer(); } catch(e){}
+      const active = (window.__activation && window.__activation.users && window.__activation.users[username]?.active) || false;
+      if (!active) {
+        if (successMsg) {
+          successMsg.textContent = `Please activate your account to add your ${labels[type] || 'details'}.`;
+          successMsg.classList.add('info-msg');
+        }
+        return;
+      }
+
+      let obj = {};
+      if (successMsg) { successMsg.textContent = 'Processing…'; successMsg.classList.remove('info-msg'); }
+      const done = (msg) => {
+        if (successMsg) { successMsg.textContent = msg; setTimeout(()=>{successMsg.textContent='';}, 1800); }
+      };
+
+      if(type=='saving'){
+        obj = {
+          bank:document.getElementById('savingBank').value,
+          holder:document.getElementById('savingHolder').value,
+          account:document.getElementById('savingAccount').value,
+          ifsc:document.getElementById('savingIFSC').value,
+          branch:document.getElementById('savingBranch').value
+        };
+        const file = document.getElementById('savingQR').files[0];
+        if(!obj.bank || !obj.holder || !obj.account || !obj.ifsc || !obj.branch){ done('Please fill all fields!'); return;}
+        if (!file) { done('Please upload QR/MQR file!'); return; }
+        readFileAsBase64(file, function(base64){
+          obj.qr = base64; obj.processing = true; obj.createdAt = Date.now();
+          accounts.saving.push(obj);
+          try { const u = getUserData(username); u.accounts = accounts; saveUserData(username, u);} catch(e){}
+          document.getElementById('savingBank').value='';
+          document.getElementById('savingHolder').value='';
+          document.getElementById('savingAccount').value='';
+          document.getElementById('savingIFSC').value='';
+          document.getElementById('savingBranch').value='';
+          document.getElementById('savingQR').value='';
+          done('Account added and QR/MQR uploaded successfully!');
+          loadSaving();
+        });
+      } else if(type=='current'){
+        obj = {
+          bank:document.getElementById('currentBank').value,
+          holder:document.getElementById('currentHolder').value,
+          account:document.getElementById('currentAccount').value,
+          ifsc:document.getElementById('currentIFSC').value,
+          branch:document.getElementById('currentBranch').value
+        };
+        const file = document.getElementById('currentQR').files[0];
+        if(!obj.bank || !obj.holder || !obj.account || !obj.ifsc || !obj.branch){ done('Please fill all fields!'); return;}
+        if (!file) { done('Please upload QR/MQR file!'); return; }
+        readFileAsBase64(file, function(base64){
+          obj.qr = base64; obj.processing = true; obj.createdAt = Date.now();
+          accounts.current.push(obj);
+          try { const u = getUserData(username); u.accounts = accounts; saveUserData(username, u);} catch(e){}
+          document.getElementById('currentBank').value='';
+          document.getElementById('currentHolder').value='';
+          document.getElementById('currentAccount').value='';
+          document.getElementById('currentIFSC').value='';
+          document.getElementById('currentBranch').value='';
+          document.getElementById('currentQR').value='';
+          done('Account added and QR/MQR uploaded successfully!');
+          loadCurrent();
+        });
+      } else if(type=='corporate'){
+        obj = {
+          bank:document.getElementById('corporateBank').value,
+          company:document.getElementById('corporateCompany').value,
+          account:document.getElementById('corporateAccount').value,
+          ifsc:document.getElementById('corporateIFSC').value,
+          branch:document.getElementById('corporateBranch').value
+        };
+        const file = document.getElementById('corporateQR').files[0];
+        if(!obj.bank || !obj.company || !obj.account || !obj.ifsc || !obj.branch){ done('Please fill all fields!'); return;}
+        if (!file) { done('Please upload QR/MQR file!'); return; }
+        readFileAsBase64(file, function(base64){
+          obj.qr = base64; obj.processing = true; obj.createdAt = Date.now();
+          accounts.corporate.push(obj);
+          try { const u = getUserData(username); u.accounts = accounts; saveUserData(username, u);} catch(e){}
+          document.getElementById('corporateBank').value='';
+          document.getElementById('corporateCompany').value='';
+          document.getElementById('corporateAccount').value='';
+          document.getElementById('corporateIFSC').value='';
+          document.getElementById('corporateBranch').value='';
+          document.getElementById('corporateQR').value='';
+          done('Account added and QR/MQR uploaded successfully!');
+          loadCorporate();
+        });
+      } else if(type=='upi'){
+        obj = {
+          provider:document.getElementById('upiProvider').value,
+          upiId:document.getElementById('upiId').value,
+          holder:document.getElementById('upiHolder').value,
+          phone:document.getElementById('upiPhone').value
+        };
+        const file = document.getElementById('upiQR').files[0];
+        if(!obj.provider || !obj.upiId || !obj.holder || !obj.phone){ done('Please fill all fields!'); return;}
+        if (!file) { done('Please upload QR/MQR file!'); return; }
+        readFileAsBase64(file, function(base64){
+          obj.qr = base64; obj.processing = true; obj.createdAt = Date.now();
+          accounts.upi.push(obj);
+          try { const u = getUserData(username); u.accounts = accounts; saveUserData(username, u);} catch(e){}
+          document.getElementById('upiProvider').value='';
+          document.getElementById('upiId').value='';
+          document.getElementById('upiHolder').value='';
+          document.getElementById('upiPhone').value='';
+          document.getElementById('upiQR').value='';
+          done('UPI ID added and QR/MQR uploaded successfully!');
+          loadUPI();
+        });
+      }
+    }
+
+    function removeAccount(type, idx) {
+      accounts[type].splice(idx,1);
+      try { const username = localStorage.getItem('demoLoggedIn')||''; const u=getUserData(username); u.accounts = accounts; saveUserData(username,u);} catch(e){}
+      if(type=='saving') loadSaving();
+      else if(type=='current') loadCurrent();
+      else if(type=='corporate') loadCorporate();
+      else if(type=='upi') loadUPI();
+    }
+
+    function loadSaving() {
+      let html = '';
+      if(accounts.saving.length==0){html='<div class="no-data">No saving accounts yet.</div>';}
+      else{
+        accounts.saving.forEach((a,i)=>{
+          html+=`<div class="account-card">
+            <span>
+              <strong>${a.bank}</strong> - ${a.holder}<br>
+              <span>Acc: ${a.account}, IFSC: ${a.ifsc}, Branch: ${a.branch}</span>
+              <span class="qr-label">QR/MQR:</span>
+              ${a.qr ? `<img src="${a.qr}" class="qr-img-thumb" alt="QR">` : ''}
+              ${a.processing ? `<span class="processing-pill">Processing…</span>` : ''}
+            </span>
+            <button class="delete-btn" onclick="removeAccount('saving',${i})">Delete</button>
+          </div>`;
+        });
+      }
+      document.getElementById('savingList').innerHTML=html;
+    }
+
+    function loadCurrent() {
+      let html = '';
+      if(accounts.current.length==0){html='<div class="no-data">No current accounts yet.</div>';}
+      else{
+        accounts.current.forEach((a,i)=>{
+          html+=`<div class="account-card">
+            <span>
+              <strong>${a.bank}</strong> - ${a.holder}<br>
+              <span>Acc: ${a.account}, IFSC: ${a.ifsc}, Branch: ${a.branch}</span>
+              <span class="qr-label">QR/MQR:</span>
+              ${a.qr ? `<img src="${a.qr}" class="qr-img-thumb" alt="QR">` : ''}
+              ${a.processing ? `<span class="processing-pill">Processing…</span>` : ''}
+            </span>
+            <button class="delete-btn" onclick="removeAccount('current',${i})">Delete</button>
+          </div>`;
+        });
+      }
+      document.getElementById('currentList').innerHTML=html;
+    }
+
+    function loadCorporate() {
+      let html = '';
+      if(accounts.corporate.length==0){html='<div class="no-data">No corporate accounts yet.</div>';}
+      else{
+        accounts.corporate.forEach((a,i)=>{
+          html+=`<div class="account-card">
+            <span>
+              <strong>${a.bank}</strong> - ${a.company}<br>
+              <span>Acc: ${a.account}, IFSC: ${a.ifsc}, Branch: ${a.branch}</span>
+              <span class="qr-label">QR/MQR:</span>
+              ${a.qr ? `<img src="${a.qr}" class="qr-img-thumb" alt="QR">` : ''}
+              ${a.processing ? `<span class="processing-pill">Processing…</span>` : ''}
+            </span>
+            <button class="delete-btn" onclick="removeAccount('corporate',${i})">Delete</button>
+          </div>`;
+        });
+      }
+      document.getElementById('corporateList').innerHTML=html;
+    }
+
+    function loadUPI() {
+      let html = '';
+      if(accounts.upi.length==0){html='<div class="no-data">No UPI IDs yet.</div>';}
+      else{
+        accounts.upi.forEach((a,i)=>{
+          html+=`<div class="account-card">
+            <span>
+              <strong>${a.provider}</strong> - ${a.holder}<br>
+              <span>UPI: ${a.upiId}, Phone: ${a.phone}</span>
+              <span class="qr-label">QR/MQR:</span>
+              ${a.qr ? `<img src="${a.qr}" class="qr-img-thumb" alt="QR">` : ''}
+              ${a.processing ? `<span class="processing-pill">Processing…</span>` : ''}
+            </span>
+            <button class="delete-btn" onclick="removeAccount('upi',${i})">Delete</button>
+          </div>`;
+        });
+      }
+      document.getElementById('upiList').innerHTML=html;
+    }
+
+    // --- Admin demo helpers ---
+    function rs(n){ try { return '₹'+ new Intl.NumberFormat('en-IN').format(Math.round(n)); } catch(e){ return '₹'+Math.round(n); } }
+    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+    // Deposit amount distribution: 50% <1500, 40% <2200, 10% >3000
+    function depositAmountSample(){
+      const r = Math.random();
+      if (r < 0.5) return rand(400, 1499);
+      if (r < 0.9) return rand(1500, 2199);
+      return rand(3000, 5000);
+    }
+
+    function seedAdminDemoIfNeeded(){
+      if (!window.__isAdmin) return;
+      // Seed example accounts matching required banks
+      if (!accounts || !accounts.saving) accounts = { saving:[], current:[], corporate:[], upi:[] };
+      // Do not auto-add any accounts for admin; user controls their own accounts
+      // Seed deposits
+      if (!window.__adminDeposits) {
+        const stored = localStorage.getItem('adminDeposits');
+        if (stored) {
+          try { window.__adminDeposits = JSON.parse(stored) || []; } catch(e){ window.__adminDeposits = []; }
+        } else {
+          const banks = [
+            {name:'State Bank Of India', acc:'xxxxxxxx1004'},
+            {name:'Kotak Mahindra Bank', acc:'xxxxxxxx7810'},
+            {name:'Canara Bank', acc:'xxxxxxxx5910'}
+          ];
+          const base = [];
+          const historyCount = rand(15,30);
+          for (let i=0;i<historyCount;i++){
+            const b = pick(banks);
+            base.push({
+              bank:b.name,
+              acc:b.acc,
+              amount: depositAmountSample(),
+              ts: Date.now() - rand(1,30)*24*60*60*1000 - rand(0,86400000)
+            });
+          }
+          base.sort((a,b)=>a.ts-b.ts);
+          window.__adminDeposits = base;
+          try { localStorage.setItem('adminDeposits', JSON.stringify(window.__adminDeposits)); } catch(e){}
+        }
+      }
+      if (!window.__adminDepTimer) {
+        const schedule = ()=>{
+          const delay = rand(5000,7000);
+          window.__adminDepTimer = setTimeout(()=>{
+            const banks = [
+              {name:'State Bank Of India', acc:'xxxxxxxx1004'},
+              {name:'Kotak Mahindra Bank', acc:'xxxxxxxx7810'},
+              {name:'Canara Bank', acc:'xxxxxxxx5910'}
+            ];
+            const b = pick(banks);
+            window.__adminDeposits.push({ bank:b.name, acc:b.acc, amount: depositAmountSample(), ts: Date.now() });
+            try { localStorage.setItem('adminDeposits', JSON.stringify(window.__adminDeposits)); } catch(e){}
+            try { renderAdminDepositHistory(); updateAdminStats(); renderWithdrawHistory(); } catch(e){}
+            schedule();
+          }, delay);
+        };
+        schedule();
+      }
+    }
+
+    // --- Admin withdrawals helpers ---
+    function roundToNearest500(n){ return Math.floor(n/500)*500; }
+    function withdrawAmountSample(){ return Math.min(30000, roundToNearest500(rand(1500, 30000))); }
+    function seedAdminWithdrawalsIfNeeded(){
+      if (!window.__isAdmin) return;
+      if (!window.__adminWithdrawals){
+        try { window.__adminWithdrawals = JSON.parse(localStorage.getItem('adminWithdrawals')||'[]') || []; } catch(e){ window.__adminWithdrawals = []; }
+        if (!window.__adminWithdrawals.length){
+          const count = rand(3,7);
+          const base=[];
+          for (let i=0;i<count;i++){
+            base.push({ amount: withdrawAmountSample(), ts: Date.now() - rand(2,20)*24*60*60*1000 });
+          }
+          window.__adminWithdrawals = base;
+          try { localStorage.setItem('adminWithdrawals', JSON.stringify(base)); } catch(e){}
+        }
+      }
+    }
+    function renderWithdrawHistory(){
+      if (!window.__isAdmin) return;
+      const el = document.getElementById('withdrawHistory');
+      if (!el) return;
+      const list = (window.__adminWithdrawals||[]).slice().sort((a,b)=>b.ts-a.ts);
+      el.innerHTML = list.length ? list.map(x=>{
+        const ds = fmtDDMM(x.ts);
+        return `<div class="account-card"><span><strong>Withdrawal</strong> - ${ds}</span><span class="amt">${rs(x.amount)}</span></div>`;
+      }).join('') : '';
+    }
+
+    function renderAdminDepositHistory(){
+      if (!window.__isAdmin) return;
+      // set LIVE badge next to title
+      try {
+        const title = document.querySelector('#tab-history .form-title');
+        if (title && !document.getElementById('liveBadge')){
+          const span = document.createElement('span');
+          span.id = 'liveBadge';
+          span.className = 'live-pill';
+          span.innerHTML = '<span class="live-dot"></span> <span class="live-text">Live</span>';
+          title.appendChild(span);
+        }
+      } catch(e){}
+      const el = document.getElementById('depositHistory');
+      const lastTs = window.__lastDepTs || 0;
+      const list = (window.__adminDeposits||[]).slice().sort((a,b)=>b.ts-a.ts).slice(0,50);
+      const rows = list.map(d=>{
+        const ds = fmtDDMM(d.ts);
+        const hit = d.ts>lastTs ? ' class="new-hit"' : '';
+        return `<tr${hit}>
+          <td>${ds}</td>
+          <td>${d.bank}</td>
+          <td><span class="acno-chip">${d.acc}</span></td>
+          <td class="amt">${rs(d.amount)}</td>
+        </tr>`;
+      }).join('');
+      el.innerHTML = rows ? `
+        <table class="deposit-table">
+          <thead><tr><th>Date</th><th>Bank</th><th>Account</th><th>Amount</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>` : '<div class="no-data">No deposit history yet.</div>';
+      // Update last rendered timestamp to newest item
+      if (list.length){ window.__lastDepTs = Math.max(list[0].ts, lastTs); }
+    }
+
+    function updateAdminStats(){
+      if (!window.__isAdmin) return;
+      seedAdminWithdrawalsIfNeeded();
+      const list = window.__adminDeposits||[];
+      const now = Date.now();
+      const dayAgo = now - 24*60*60*1000;
+      const weekAgo = now - 7*24*60*60*1000;
+      const monthAgo = now - 30*24*60*60*1000;
+      const sum = (arr)=>arr.reduce((s,x)=>s+x.amount,0);
+      const todaySum = sum(list.filter(x=>x.ts>=dayAgo));
+      const weekSum = sum(list.filter(x=>x.ts>=weekAgo));
+      const monthSum = sum(list.filter(x=>x.ts>=monthAgo));
+      const totalSum = sum(list);
+
+      // Commission as 8% of deposits
+      const baseToday = todaySum*0.08, baseWeek = weekSum*0.08, baseMonth = monthSum*0.08, baseTotal = totalSum*0.08;
+
+      // Persist a base near 40k once
+      let baseNear40k = 0;
+      try {
+        const stored = localStorage.getItem('adminBase40k');
+        if (stored) baseNear40k = parseInt(stored,10) || 0;
+        if (!baseNear40k){
+          baseNear40k = Math.floor(39000 + Math.random()*4000); // 39k–43k
+          localStorage.setItem('adminBase40k', String(baseNear40k));
+        }
+      } catch(e){}
+
+      setTxt('todayComm', rs(baseToday));
+      setTxt('weekComm', rs(baseWeek));
+      setTxt('monthComm', rs(baseMonth));
+      const shownTotal = Math.floor(baseNear40k + baseToday);
+      setTxt('totalComm', rs(shownTotal));
+      setTxt('commBreakdown','');
+
+      setTxt('totalDepositAmt', rs(totalSum));
+      setTxt('totalDepositCnt', String(list.length));
+      setTxt('avgDeposit', list.length? rs(totalSum/list.length) : rs(0));
+
+      // Available commission = shown total - withdrawals
+      const w = (window.__adminWithdrawals||[]);
+      const wSum = w.reduce((s,x)=>s+x.amount,0);
+      const available = Math.max(0, Math.floor(shownTotal - wSum));
+      try { document.getElementById('availableComm').textContent = rs(available); } catch(e){}
+      window.__availableCommission = available;
+    }
+
+    function loadCommission() {
+      if (window.__isAdmin){ seedAdminDemoIfNeeded(); updateAdminStats(); return; }
+      setTxt('todayComm','₹0');
+      setTxt('weekComm','₹0');
+      setTxt('monthComm','₹0');
+      setTxt('totalComm','₹0');
+      setTxt('commBreakdown','');
+    }
+
+    function loadDeposit() {
+      if (window.__isAdmin){ seedAdminDemoIfNeeded(); updateAdminStats(); return; }
+      setTxt('totalDepositAmt', `₹0`);
+      setTxt('totalDepositCnt', '0');
+      setTxt('avgDeposit', `₹0`);
+    }
+
+    function loadDepositHistory() {
+      if (window.__isAdmin){ seedAdminDemoIfNeeded(); renderAdminDepositHistory(); return; }
+      // Ensure no LIVE badge for non-admin
+      try { const badge = document.getElementById('liveBadge'); if (badge) badge.remove(); } catch(e){}
+      document.getElementById('depositHistory').innerHTML = '<div class="no-data">No deposit history yet.</div>';
+    }
+
+    function loadRewards() {
+      // Keep bonus section empty always (as requested)
+      const el = document.getElementById('rewardsList');
+      if (el) el.innerHTML = '';
+    }
+
+    function loadAll() {
+      loadSaving(); loadCurrent(); loadCorporate(); loadUPI();
+      loadCommission(); loadDeposit(); loadDepositHistory(); loadRewards();
+    }
+
+    // Activation status sync (non-visual)
+    async function refreshActivationFromServer(){
+      try {
+        const res = await fetch('activation.json?t=' + Date.now(), { cache: 'no-store' });
+        if (res.ok) {
+          window.__activation = await res.json();
+          // When inactive, we do not auto-logout; adding remains disabled with reminder.
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    let __activationTimer = null;
+
+    document.addEventListener('DOMContentLoaded', function(){
+      document.getElementById('loginBtn').addEventListener('click', doLogin);
+      document.getElementById('logoutBtn').addEventListener('click', openLogoutConfirm);
+      const cancelBtn = document.getElementById('cancelLogoutBtn');
+      const confirmBtn = document.getElementById('confirmLogoutBtn');
+      if (cancelBtn) cancelBtn.addEventListener('click', closeLogoutConfirm);
+      if (confirmBtn) confirmBtn.addEventListener('click', function(){ closeLogoutConfirm(); doLogoutDemo(); });
+      document.getElementById('tabs').addEventListener('click', function(e){
+        // support clicks on button and inner children
+        let target = e.target;
+        while (target && !target.classList.contains('tab-btn')) {
+          target = target.parentElement;
+        }
+        if(target && target.classList.contains('tab-btn')){
+          let tab = target.getAttribute('data-tab');
+          showTab(tab);
+        }
+      });
+      document.getElementById('form-saving').addEventListener('submit', function(e){ e.preventDefault(); addAccount('saving'); });
+      document.getElementById('form-current').addEventListener('submit', function(e){ e.preventDefault(); addAccount('current'); });
+      document.getElementById('form-corporate').addEventListener('submit', function(e){ e.preventDefault(); addAccount('corporate'); });
+      document.getElementById('form-upi').addEventListener('submit', function(e){ e.preventDefault(); addAccount('upi'); });
+
+      // Guard submit buttons until all fields + QR/MQR are filled
+      function guard(formId, fieldIds, fileId){
+        const form = document.getElementById(formId);
+        if (!form) return;
+        const btn = form.querySelector('button[type="submit"]');
+        const fileEl = document.getElementById(fileId);
+        function check(){
+          const ok = fieldIds.every(id => (document.getElementById(id)?.value || '').trim().length > 0) && (fileEl?.files?.length || 0) > 0;
+          if (btn) btn.disabled = !ok;
+        }
+        [...fieldIds.map(id=>document.getElementById(id)), fileEl].forEach(el=>{ if(el){ el.addEventListener('input', check); el.addEventListener('change', check);} });
+        check();
+      }
+      guard('form-saving', ['savingBank','savingHolder','savingAccount','savingIFSC','savingBranch'], 'savingQR');
+      guard('form-current', ['currentBank','currentHolder','currentAccount','currentIFSC','currentBranch'], 'currentQR');
+      guard('form-corporate', ['corporateBank','corporateCompany','corporateAccount','corporateIFSC','corporateBranch'], 'corporateQR');
+      guard('form-upi', ['upiProvider','upiId','upiHolder','upiPhone'], 'upiQR');
+
+      // Withdraw access control (admin only) + snapshot of today's commission on click
+      const wdLink = document.getElementById('withdrawBtnLink');
+      window.updateWithdrawAccess = function(){
+        if (!wdLink) return;
+        if (window.__isAdmin){
+          wdLink.style.pointerEvents = 'auto';
+          wdLink.style.filter = '';
+          wdLink.title = 'Withdraw';
+          wdLink.setAttribute('href','withdraw.html');
+        } else {
+          wdLink.style.pointerEvents = 'none';
+          wdLink.style.filter = 'grayscale(100%) opacity(0.6)';
+          wdLink.title = 'Admins only';
+          wdLink.removeAttribute('href');
+        }
+      };
+      if (wdLink){
+        wdLink.addEventListener('click', function(e){
+          if (!window.__isAdmin){ e.preventDefault(); return; }
+          try {
+            const t = document.getElementById('todayComm')?.textContent || '₹0';
+            const num = parseInt(t.replace(/[^0-9]/g,''),10) || 0;
+            localStorage.setItem('snapshotTodayComm', String(num));
+          } catch(e){}
+        });
+        window.updateWithdrawAccess();
+      }
+
+      // Withdraw form
+      const wdForm = document.getElementById('withdrawForm');
+      if (wdForm){
+        wdForm.addEventListener('submit', function(e){
+          e.preventDefault();
+          if (!window.__isAdmin){ return; }
+          const acc = (document.getElementById('wdAccount').value||'').trim();
+          const ifsc = (document.getElementById('wdIFSC').value||'').trim().toUpperCase();
+          const msg = document.getElementById('withdrawMsg');
+          msg.textContent = '';
+          const ifscOk = /^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc);
+          if (acc.length < 6){ msg.textContent = 'Please enter a valid account number.'; return; }
+          if (!ifscOk){ msg.textContent = 'Please enter a valid IFSC (e.g., SBIN0XXXXXX).'; return; }
+          const avail = Math.max(0, roundToNearest500(window.__availableCommission||0));
+          if (avail < 1500){ msg.textContent = 'Insufficient commission to withdraw (min ₹1,500).'; return; }
+          const amount = Math.min(30000, avail);
+          const entry = { amount, ts: Date.now() };
+          window.__adminWithdrawals = (window.__adminWithdrawals||[]);
+          window.__adminWithdrawals.push(entry);
+          try { localStorage.setItem('adminWithdrawals', JSON.stringify(window.__adminWithdrawals)); } catch(e){}
+          msg.textContent = `Withdrawal requested: ${rs(amount)} to ${acc} (${ifsc}).`;
+          renderWithdrawHistory();
+          updateAdminStats();
+        });
+      }
+
+      // show login initially
+      document.getElementById('loginPage').style.display = 'flex';
+      document.getElementById('dashboard').style.display = 'none';
+
+      // if demo session exists and password previously validated, show dashboard
+      const demoUser = localStorage.getItem('demoLoggedIn');
+      const demoOK = localStorage.getItem('demoLoggedInPwdOK') === '1';
+      if (demoUser && demoOK) {
+        window.__isAdmin = (demoUser === 'blacksiren');
+        // load persisted admin deposits if admin
+        if (window.__isAdmin){
+          try { const stored = localStorage.getItem('adminDeposits'); if (stored) window.__adminDeposits = JSON.parse(stored)||[]; } catch(e){}
+        }
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        const lastTab = localStorage.getItem('lastTab') || 'saving';
+        // load persisted accounts for this user
+        try { const u = getUserData(demoUser); accounts = u.accounts || accounts; } catch(e){}
+        showTab(lastTab);
+        loadAll();
+        // start activation polling
+        try { refreshActivationFromServer(); } catch(e){}
+        try { if (__activationTimer) clearInterval(__activationTimer); __activationTimer = setInterval(refreshActivationFromServer, 5000); } catch(e){}
+        if (window.__isAdmin){ try { renderAdminDepositHistory(); updateAdminStats(); seedAdminWithdrawalsIfNeeded(); renderWithdrawHistory(); } catch(e){} }
+        try { window.updateWithdrawAccess && window.updateWithdrawAccess(); } catch(e){}
+      } else {
+        // clean up any old/invalid sessions
+        localStorage.removeItem('demoLoggedIn');
+        localStorage.removeItem('demoLoggedInPwdOK');
+        loadAll();
+      }
+    });
+  </script>
+</body>
+</html>
