@@ -302,3 +302,49 @@
       </div>
     </div>
   </div>
+  <script>
+
+async function doLogin() {
+    const username = (document.getElementById('loginEmail').value || '').trim();
+    const pass = (document.getElementById('loginPass').value || '').trim();
+    const loginErr = document.getElementById('loginError');
+
+    loginErr.style.display = 'none';
+    loginErr.textContent = '';
+
+    if (!username) {
+        loginErr.textContent = 'Please enter your username.';
+        loginErr.style.display = 'block';
+        return;
+    }
+
+    if (!pass) {
+        loginErr.textContent = 'Please enter your password.';
+        loginErr.style.display = 'block';
+        return;
+    }
+
+    try {
+        const res = await fetch('credentials.json');
+        const data = await res.json();
+
+        if (data[username] && data[username] === pass) {
+            localStorage.setItem('demoLoggedIn', username);
+            window.location.href = "dashboard.html";
+        } else {
+            loginErr.textContent = 'Invalid username or password.';
+            loginErr.style.display = 'block';
+        }
+
+    } catch (err) {
+        loginErr.textContent = 'Error loading credentials.';
+        loginErr.style.display = 'block';
+    }
+}
+
+document.getElementById("loginBtn").addEventListener("click", doLogin);
+
+</script>
+
+</body>
+</html>

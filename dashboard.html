@@ -1,3 +1,6 @@
+<if (!localStorage.getItem("demoLoggedIn")) {
+    window.location.href = "index.html";
+}
   <!-- Dashboard -->
   <div id="dashboard" class="dashboard">
 <div class="topbar"><h2>Indepay Partner Dashboard</h2><button id="logoutBtn" class="logout-btn" title="Log Out" aria-label="Log Out" tabindex="0"><i class="fas fa-power-off"></i></button></div>
@@ -307,15 +310,7 @@
     // Login: validate username/password against credentials.json in site root
     function setTxt(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
     function fmtDDMM(ts){ const d=new Date(ts); const dd=String(d.getDate()).padStart(2,'0'); const mm=String(d.getMonth()+1).padStart(2,'0'); return `${dd}/${mm}`; }
-async function doLogin() {
-      const username = (document.getElementById('loginEmail').value || '').trim();
-      const pass = (document.getElementById('loginPass').value || '').trim();
-      const loginErr = document.getElementById('loginError');
-      loginErr.style.display = 'none';
-      loginErr.textContent = '';
 
-      if (!username) { loginErr.textContent = 'Please enter your username.'; loginErr.style.display='block'; return; }
-      if (!pass) { loginErr.textContent = 'Please enter your password.'; loginErr.style.display='block'; return; }
 
       try {
         if (!window.__creds) {
