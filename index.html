@@ -1271,18 +1271,11 @@ async function addAccount(type) {
       }
     });
   </script>
-  <script type="module">
+  <!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  signOut,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+<script>
 
 const firebaseConfig = {
   apiKey: "AIzaSyBUJeL_viie893jLs5VjkeASOApcEFfV_Q",
@@ -1293,92 +1286,77 @@ const firebaseConfig = {
   appId: "1:257155949168:web:8f4b23bb79e1719e34cab5"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-// SIGN UP
-window.signUp = function() {
+// SIGNUP
+function signUp() {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPass").value;
 
-  if (!email || !password) {
-    alert("Enter Email and Password.");
-    return;
-  }
-
-  createUserWithEmailAndPassword(auth, email, password)
+  auth.createUserWithEmailAndPassword(email, password)
     .then((userCredential) => {
-      sendEmailVerification(userCredential.user);
-      alert("Signup successful! Please Verify Email.");
+      userCredential.user.sendEmailVerification();
+      alert("Signup successful! Email verify karo.");
     })
     .catch((error) => alert(error.message));
-};
+}
 
 // LOGIN
-window.loginUser = function() {
+function loginUser() {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPass").value;
 
-  signInWithEmailAndPassword(auth, email, password)
+  auth.signInWithEmailAndPassword(email, password)
     .then((userCredential) => {
+
       if (!userCredential.user.emailVerified) {
-        alert("Verify your Email before login.");
+        alert("Pehle email verify karo.");
         return;
       }
 
       document.getElementById("loginPage").style.display = "none";
       document.getElementById("dashboard").style.display = "block";
-      setTimeout(() => {
-    try {
-      if (window.loadAll) window.loadAll();
-      if (window.updateWithdrawAccess) window.updateWithdrawAccess();
-    } catch(e) {
-      console.log("Dashboard init error:", e);
-    }
-  }, 200);
 
-});
+      // dashboard functions safe call
+      setTimeout(() => {
+        if (window.loadAll) window.loadAll();
+        if (window.updateWithdrawAccess) window.updateWithdrawAccess();
+      }, 200);
+
+    })
     .catch((error) => alert(error.message));
-};
+}
 
 // RESET PASSWORD
-window.resetPassword = function() {
+function resetPassword() {
   const email = document.getElementById("loginEmail").value;
 
-  if (!email) {
-    alert("Email daalo.");
-    return;
-  }
-
-  sendPasswordResetEmail(auth, email)
-    .then(() => alert("Password reset link email par bhej diya."))
+  auth.sendPasswordResetEmail(email)
+    .then(() => alert("Password reset email bhej diya."))
     .catch((error) => alert(error.message));
-};
+}
 
 // LOGOUT
-window.logoutUser = function() {
-  signOut(auth).then(() => {
+function logoutUser() {
+  auth.signOut().then(() => {
     document.getElementById("dashboard").style.display = "none";
     document.getElementById("loginPage").style.display = "flex";
   });
-};
+}
 
 // AUTO LOGIN
-onAuthStateChanged(auth, (user) => {
+auth.onAuthStateChanged((user) => {
   if (user && user.emailVerified) {
+
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
+
     setTimeout(() => {
-      try {
-        if (window.loadAll) window.loadAll();
-        if (window.updateWithdrawAccess) window.updateWithdrawAccess();
-      } catch(e) {
-        console.log("Auto dashboard error:", e);
-      }
+      if (window.loadAll) window.loadAll();
+      if (window.updateWithdrawAccess) window.updateWithdrawAccess();
     }, 200);
   }
 });
-
-  </script>
 </body>
 </html>
