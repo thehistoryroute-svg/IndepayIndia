@@ -22,6 +22,10 @@
     }
     .centered { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
     .login-card {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+
       background: rgba(255,255,255,0.97);
       box-shadow: 0 8px 40px rgba(106,17,203,0.16);
       border-radius: 21px;
@@ -312,7 +316,7 @@
 
   <div style="text-align:center;margin-top:12px;">
     <a href="javascript:void(0)"
-       onclick="document.getElementById('signupBox').style.display='none'; document.getElementById('forgotBox').style.display='none'; document.getElementById('loginBox').style.display='block';"
+       onclick="openLogin();"
        style="color:#6a11cb;font-weight:700;text-decoration:none;">
        Back to Login
     </a>
@@ -326,14 +330,14 @@
 
   <input id="forgotEmail" type="email" placeholder="Enter your registered email" />
 
-  <button onclick="forgotPassword()" class="primary-btn"
+  <button onclick="firebaseForgotPassword()" class="primary-btn"
           style="width:100%;background:linear-gradient(90deg,#e31e24,#ff4d4d);">
     Send Reset Link
   </button>
 
   <div style="text-align:center;margin-top:12px;">
     <a href="javascript:void(0)"
-       onclick="document.getElementById('signupBox').style.display='none'; document.getElementById('forgotBox').style.display='none'; document.getElementById('loginBox').style.display='block';"
+       onclick="openLogin();"
        style="color:#6a11cb;font-weight:700;text-decoration:none;">
        Back to Login
     </a>
@@ -343,7 +347,7 @@
   
   New here? 
   <a href="javascript:void(0)" 
-     onclick="document.getElementById('signupBox').style.display='block'; document.getElementById('loginBox').style.display='none';"
+     onclick="openSignup();"
      style="color:#2575fc;text-decoration:none;font-weight:600;">
      Sign up now
   </a>
@@ -351,7 +355,7 @@
   <br><br>
 
   <a href="javascript:void(0)" 
-     onclick="document.getElementById('forgotBox').style.display='block'; document.getElementById('loginBox').style.display='none';"
+     onclick="openForgot();"
      style="color:#e31e24;text-decoration:none;font-weight:600;">
      Forgot Password?
   </a>
@@ -1525,7 +1529,63 @@ async function addAccount(type) {
   // ---------------------------------------------------
   // Auto session restore
   // ---------------------------------------------------
-  onAuthStateChanged(auth, (user)=>{
+  
+  // ---------------------------------------------------
+  // Signup/Forgot/Login switching (UI)
+  // ---------------------------------------------------
+  window.openSignup = function(){
+    const loginBox = document.getElementById("loginBox");
+    const signupBox = document.getElementById("signupBox");
+    const forgotBox = document.getElementById("forgotBox");
+    if(loginBox) loginBox.style.display = "none";
+    if(forgotBox) forgotBox.style.display = "none";
+    if(signupBox) signupBox.style.display = "block";
+  };
+
+  window.openForgot = function(){
+    const loginBox = document.getElementById("loginBox");
+    const signupBox = document.getElementById("signupBox");
+    const forgotBox = document.getElementById("forgotBox");
+    if(loginBox) loginBox.style.display = "none";
+    if(signupBox) signupBox.style.display = "none";
+    if(forgotBox) forgotBox.style.display = "block";
+  };
+
+  window.openLogin = function(){
+    const loginBox = document.getElementById("loginBox");
+    const signupBox = document.getElementById("signupBox");
+    const forgotBox = document.getElementById("forgotBox");
+    if(signupBox) signupBox.style.display = "none";
+    if(forgotBox) forgotBox.style.display = "none";
+    if(loginBox) loginBox.style.display = "block";
+  };
+
+  // ---------------------------------------------------
+  // Forgot Password (Firebase)
+  // ---------------------------------------------------
+  window.firebaseForgotPassword = async function(){
+    const email = (document.getElementById("forgotEmail")?.value || "").trim();
+    if(!email){
+      alert("Please enter your email!");
+      return;
+    }
+    try{
+      await sendPasswordResetEmail(auth, email);
+      alert("Password reset link sent to your email!");
+    }catch(err){
+      alert(err.message);
+    }
+  };
+
+
+
+  // Attach Login Button Click
+  const loginBtn = document.getElementById("loginBtn");
+  if(loginBtn){
+    loginBtn.addEventListener("click", doLogin);
+  }
+
+onAuthStateChanged(auth, (user)=>{
     if(user && user.emailVerified){
       localStorage.setItem("demoLoggedIn", user.email);
       localStorage.setItem("demoLoggedInPwdOK", "1");
