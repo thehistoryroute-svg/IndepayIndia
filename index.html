@@ -293,13 +293,28 @@
       <p>Sign in to manage your accounts & earnings</p>
 
       <!-- Email + Password -->
-<input type="text" id="loginEmail" placeholder="Username" autocomplete="off">
+<input type="email" id="loginEmail" placeholder="Email" autocomplete="off">
       <input type="password" id="loginPass" placeholder="Password" autocomplete="off">
       <button id="loginBtn">Login</button>
       <div id="loginError" class="error-msg" style="display:none;"></div>
 <div class="signup" style="text-align:center;margin-top:10px;font-size:14px;">
-        New here? <a href="https://t.me/Emmi978_bot" target="_blank" rel="noopener" style="color:#2575fc;text-decoration:none;font-weight:600;">Sign up now</a>
-      </div>
+  
+  New here? 
+  <a href="javascript:void(0)" 
+     onclick="document.getElementById('signupBox').style.display='block'; document.getElementById('loginBox').style.display='none';"
+     style="color:#2575fc;text-decoration:none;font-weight:600;">
+     Sign up now
+  </a>
+
+  <br><br>
+
+  <a href="javascript:void(0)" 
+     onclick="document.getElementById('forgotBox').style.display='block'; document.getElementById('loginBox').style.display='none';"
+     style="color:#e31e24;text-decoration:none;font-weight:600;">
+     Forgot Password?
+  </a>
+
+</div>
     </div>
   </div>
 
