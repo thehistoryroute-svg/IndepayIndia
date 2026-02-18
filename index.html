@@ -297,6 +297,48 @@
       <input type="password" id="loginPass" placeholder="Password" autocomplete="off">
       <button id="loginBtn">Login</button>
       <div id="loginError" class="error-msg" style="display:none;"></div>
+      
+      <!-- ✅ Signup Box -->
+<div id="signupBox" style="display:none;margin-top:18px;">
+  <h3 style="text-align:center;color:#2575fc;margin-bottom:12px;">Create Account</h3>
+
+  <input id="signupEmail" type="email" placeholder="Enter Email" />
+  <input id="signupPass" type="password" placeholder="Create Password" />
+  <input id="signupPass2" type="password" placeholder="Confirm Password" />
+
+  <button onclick="firebaseSignup()" class="primary-btn" style="width:100%;">Sign Up</button>
+
+  <div id="signupError" style="display:none;margin-top:10px;text-align:center;font-weight:700;"></div>
+
+  <div style="text-align:center;margin-top:12px;">
+    <a href="javascript:void(0)"
+       onclick="document.getElementById('signupBox').style.display='none'; document.getElementById('forgotBox').style.display='none'; document.getElementById('loginBox').style.display='block';"
+       style="color:#6a11cb;font-weight:700;text-decoration:none;">
+       Back to Login
+    </a>
+  </div>
+</div>
+
+
+<!-- ✅ Forgot Password Box -->
+<div id="forgotBox" style="display:none;margin-top:18px;">
+  <h3 style="text-align:center;color:#e31e24;margin-bottom:12px;">Reset Password</h3>
+
+  <input id="forgotEmail" type="email" placeholder="Enter your registered email" />
+
+  <button onclick="forgotPassword()" class="primary-btn"
+          style="width:100%;background:linear-gradient(90deg,#e31e24,#ff4d4d);">
+    Send Reset Link
+  </button>
+
+  <div style="text-align:center;margin-top:12px;">
+    <a href="javascript:void(0)"
+       onclick="document.getElementById('signupBox').style.display='none'; document.getElementById('forgotBox').style.display='none'; document.getElementById('loginBox').style.display='block';"
+       style="color:#6a11cb;font-weight:700;text-decoration:none;">
+       Back to Login
+    </a>
+  </div>
+</div>
 <div class="signup" style="text-align:center;margin-top:10px;font-size:14px;">
   
   New here? 
