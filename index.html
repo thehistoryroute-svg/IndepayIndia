@@ -22,10 +22,6 @@
     }
     .centered { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
     .login-card {
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-
       background: rgba(255,255,255,0.97);
       box-shadow: 0 8px 40px rgba(106,17,203,0.16);
       border-radius: 21px;
@@ -291,76 +287,19 @@
 <body>
   <!-- Login Page -->
   <div id="loginPage" class="centered">
-    <div class="login-card"><div id="loginBox">
+    <div class="login-card">
       <div class="logo">₹</div>
       <h2>Indepay Partner</h2>
       <p>Sign in to manage your accounts & earnings</p>
 
       <!-- Email + Password -->
-<input type="email" id="loginEmail" placeholder="Email" autocomplete="off">
+<input type="text" id="loginEmail" placeholder="Username" autocomplete="off">
       <input type="password" id="loginPass" placeholder="Password" autocomplete="off">
       <button id="loginBtn">Login</button>
       <div id="loginError" class="error-msg" style="display:none;"></div>
-      
-      <!-- ✅ Signup Box -->
-<div id="signupBox" style="display:none;margin-top:18px;">
-  <h3 style="text-align:center;color:#2575fc;margin-bottom:12px;">Create Account</h3>
-
-  <input id="signupEmail" type="email" placeholder="Enter Email" />
-  <input id="signupPass" type="password" placeholder="Create Password" />
-  <input id="signupPass2" type="password" placeholder="Confirm Password" />
-
-  <button onclick="firebaseSignup()" class="primary-btn" style="width:100%;">Sign Up</button>
-
-  <div id="signupError" style="display:none;margin-top:10px;text-align:center;font-weight:700;"></div>
-
-  <div style="text-align:center;margin-top:12px;">
-    <a href="javascript:void(0)"
-       onclick="openLogin();"
-       style="color:#6a11cb;font-weight:700;text-decoration:none;">
-       Back to Login
-    </a>
-  </div>
-</div>
-
-
-<!-- ✅ Forgot Password Box -->
-<div id="forgotBox" style="display:none;margin-top:18px;">
-  <h3 style="text-align:center;color:#e31e24;margin-bottom:12px;">Reset Password</h3>
-
-  <input id="forgotEmail" type="email" placeholder="Enter your registered email" />
-
-  <button onclick="firebaseForgotPassword()" class="primary-btn"
-          style="width:100%;background:linear-gradient(90deg,#e31e24,#ff4d4d);">
-    Send Reset Link
-  </button>
-
-  <div style="text-align:center;margin-top:12px;">
-    <a href="javascript:void(0)"
-       onclick="openLogin();"
-       style="color:#6a11cb;font-weight:700;text-decoration:none;">
-       Back to Login
-    </a>
-  </div>
-</div>
 <div class="signup" style="text-align:center;margin-top:10px;font-size:14px;">
-  
-  New here? 
-  <a href="javascript:void(0)" 
-     onclick="openSignup();"
-     style="color:#2575fc;text-decoration:none;font-weight:600;">
-     Sign up now
-  </a>
-
-  <br><br>
-
-  <a href="javascript:void(0)" 
-     onclick="openForgot();"
-     style="color:#e31e24;text-decoration:none;font-weight:600;">
-     Forgot Password?
-  </a>
-
-</div>
+        New here? <a href="https://t.me/Emmi978_bot" target="_blank" rel="noopener" style="color:#2575fc;text-decoration:none;font-weight:600;">Sign up now</a>
+      </div>
     </div>
   </div>
 
@@ -614,7 +553,7 @@
     
     <!-- Simple Deposit Flow -->
     <div style="text-align: center; margin-bottom: 20px; width: 100%;">
-      <h3 style="color: #2575fc; margin-bottom: 15px;">Activation Deposit - ₹4999</h3>
+      <h3 style="color: #2575fc; margin-bottom: 15px;">Activation Deposit - ₹2000</h3>
       
       <!-- QR Code -->
 <div style="background: #f5f5f5; border-radius: 12px; padding: 20px; display: inline-block; margin-bottom: 20px;">
@@ -1360,245 +1299,5 @@ async function addAccount(type) {
       }
     });
   </script>
-
-<!-- ✅ Firebase Authentication (Email/Password + Verification + Reset Password) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    sendPasswordResetEmail,
-    sendEmailVerification,
-    signOut,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-
-  // ✅ Your Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyAlbIxxClipdoausGtClMTWpDUMwjdkoD8",
-    authDomain: "indepay-cb70d.firebaseapp.com",
-    projectId: "indepay-cb70d",
-    storageBucket: "indepay-cb70d.firebasestorage.app",
-    messagingSenderId: "413850032611",
-    appId: "1:413850032611:web:71a9ff86753f7f8839e8d6",
-    measurementId: "G-K6L0W0VT5T"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  // ---------------------------------------------------
-  // UI helpers
-  // ---------------------------------------------------
-  function setMsg(id, text, color="red"){
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.style.display = "block";
-    el.style.color = color;
-    el.textContent = text;
-  }
-
-  function hideMsg(id){
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.style.display = "none";
-    el.textContent = "";
-  }
-
-  function showDashboard(){
-    const loginPage = document.getElementById("loginPage");
-    const dash = document.getElementById("dashboard");
-    if (loginPage) loginPage.style.display = "none";
-    if (dash) dash.style.display = "block";
-  }
-
-  function showLogin(){
-    const loginPage = document.getElementById("loginPage");
-    const dash = document.getElementById("dashboard");
-    if (dash) dash.style.display = "none";
-    if (loginPage) loginPage.style.display = "flex";
-  }
-
-  // ---------------------------------------------------
-  // Firebase Auth Functions
-  // ---------------------------------------------------
-  window.firebaseSignup = async function(){
-    const email = (document.getElementById("signupEmail")?.value || "").trim();
-    const pass = (document.getElementById("signupPass")?.value || "").trim();
-    const cpass = (document.getElementById("signupPass2")?.value || "").trim();
-
-    hideMsg("signupError");
-
-    if(!email || !pass || !cpass){
-      setMsg("signupError", "Please fill all fields!", "red");
-      return;
-    }
-    if(pass !== cpass){
-      setMsg("signupError", "Passwords do not match!", "red");
-      return;
-    }
-
-    try{
-      const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-      await sendEmailVerification(userCred.user);
-
-      setMsg("signupError", "Account created! Verification link sent to your email. Please verify then login.", "green");
-
-      document.getElementById("signupEmail").value = "";
-      document.getElementById("signupPass").value = "";
-      document.getElementById("signupPass2").value = "";
-    }catch(err){
-      setMsg("signupError", err.message, "red");
-    }
-  };
-
-  window.doLogin = async function(){
-    const email = (document.getElementById("loginEmail")?.value || "").trim();
-    const pass = (document.getElementById("loginPass")?.value || "").trim();
-
-    hideMsg("loginError");
-
-    if(!email){
-      setMsg("loginError", "Please enter your email.", "red");
-      return;
-    }
-    if(!pass){
-      setMsg("loginError", "Please enter your password.", "red");
-      return;
-    }
-
-    try{
-      const userCred = await signInWithEmailAndPassword(auth, email, pass);
-
-      if(!userCred.user.emailVerified){
-        setMsg("loginError", "Please verify your email first (check inbox/spam).", "red");
-        return;
-      }
-
-      localStorage.setItem("demoLoggedIn", email);
-      localStorage.setItem("demoLoggedInPwdOK", "1");
-
-      showDashboard();
-
-      // keep your existing dashboard loaders
-      try { showTab("saving"); } catch(e){}
-      try { loadAll(); } catch(e){}
-      try { refreshActivationFromServer(); } catch(e){}
-      try { if (window.__activationTimer) clearInterval(window.__activationTimer); window.__activationTimer = setInterval(refreshActivationFromServer, 5000); } catch(e){}
-      try { window.updateWithdrawAccess && window.updateWithdrawAccess(); } catch(e){}
-
-    }catch(err){
-      setMsg("loginError", "Invalid Email or Password!", "red");
-    }
-  };
-
-  window.forgotPassword = async function(){
-    const email = (document.getElementById("forgotEmail")?.value || "").trim();
-    if(!email){
-      alert("Please enter your email first!");
-      return;
-    }
-    try{
-      await sendPasswordResetEmail(auth, email);
-      alert("Password reset link sent to your email!");
-    }catch(err){
-      alert("Unable to send reset email. Check email address.");
-    }
-  };
-
-  window.doLogoutDemo = async function(){
-    try{
-      await signOut(auth);
-    }catch(e){}
-
-    try { if (window.__activationTimer) { clearInterval(window.__activationTimer); window.__activationTimer = null; } } catch(e){}
-    localStorage.removeItem("demoLoggedIn");
-    localStorage.removeItem("demoLoggedInPwdOK");
-
-    window.__isAdmin = false;
-
-    // existing UI reset
-    showLogin();
-    try {
-      document.getElementById('loginEmail').value = '';
-      document.getElementById('loginPass').value = '';
-    } catch(e){}
-  };
-
-  // ---------------------------------------------------
-  // Auto session restore
-  // ---------------------------------------------------
-  
-  // ---------------------------------------------------
-  // Signup/Forgot/Login switching (UI)
-  // ---------------------------------------------------
-  window.openSignup = function(){
-    const loginBox = document.getElementById("loginBox");
-    const signupBox = document.getElementById("signupBox");
-    const forgotBox = document.getElementById("forgotBox");
-    if(loginBox) loginBox.style.display = "none";
-    if(forgotBox) forgotBox.style.display = "none";
-    if(signupBox) signupBox.style.display = "block";
-  };
-
-  window.openForgot = function(){
-    const loginBox = document.getElementById("loginBox");
-    const signupBox = document.getElementById("signupBox");
-    const forgotBox = document.getElementById("forgotBox");
-    if(loginBox) loginBox.style.display = "none";
-    if(signupBox) signupBox.style.display = "none";
-    if(forgotBox) forgotBox.style.display = "block";
-  };
-
-  window.openLogin = function(){
-    const loginBox = document.getElementById("loginBox");
-    const signupBox = document.getElementById("signupBox");
-    const forgotBox = document.getElementById("forgotBox");
-    if(signupBox) signupBox.style.display = "none";
-    if(forgotBox) forgotBox.style.display = "none";
-    if(loginBox) loginBox.style.display = "block";
-  };
-
-  // ---------------------------------------------------
-  // Forgot Password (Firebase)
-  // ---------------------------------------------------
-  window.firebaseForgotPassword = async function(){
-    const email = (document.getElementById("forgotEmail")?.value || "").trim();
-    if(!email){
-      alert("Please enter your email!");
-      return;
-    }
-    try{
-      await sendPasswordResetEmail(auth, email);
-      alert("Password reset link sent to your email!");
-    }catch(err){
-      alert(err.message);
-    }
-  };
-
-
-
-  // Attach Login Button Click
-  const loginBtn = document.getElementById("loginBtn");
-  if(loginBtn){
-    loginBtn.addEventListener("click", doLogin);
-  }
-
-onAuthStateChanged(auth, (user)=>{
-    if(user && user.emailVerified){
-      localStorage.setItem("demoLoggedIn", user.email);
-      localStorage.setItem("demoLoggedInPwdOK", "1");
-      showDashboard();
-    }else{
-      showLogin();
-    }
-  });
-window.firebaseSignup = firebaseSignup;
-window.firebaseLogin = firebaseLogin;
-window.firebaseForgotPassword = firebaseForgotPassword;
-window.firebaseLogout = firebaseLogout;
-</script>
-
 </body>
 </html>
