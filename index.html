@@ -293,12 +293,12 @@
       <p>Sign in to manage your accounts & earnings</p>
 
       <!-- Email + Password -->
-<input type="Email" id="loginEmail" placeholder="Email" autocomplete="off">
+<input type="text" id="loginEmail" placeholder="Username" autocomplete="off">
       <input type="password" id="loginPass" placeholder="Password" autocomplete="off">
       <button id="loginBtn">Login</button>
       <div id="loginError" class="error-msg" style="display:none;"></div>
 <div class="signup" style="text-align:center;margin-top:10px;font-size:14px;">
-        New here? Sign up now</a>
+        New here? <a href="https://t.me/Emmi978_bot" target="_blank" rel="noopener" style="color:#2575fc;text-decoration:none;font-weight:600;">Sign up now</a>
       </div>
     </div>
   </div>
@@ -609,7 +609,26 @@
 </div>
 
 <script>
-  
+    // Login: validate username/password against credentials.json in site root
+    function setTxt(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
+    function fmtDDMM(ts){ const d=new Date(ts); const dd=String(d.getDate()).padStart(2,'0'); const mm=String(d.getMonth()+1).padStart(2,'0'); return `${dd}/${mm}`; }
+async function doLogin() {
+      const username = (document.getElementById('loginEmail').value || '').trim();
+      const pass = (document.getElementById('loginPass').value || '').trim();
+      const loginErr = document.getElementById('loginError');
+      loginErr.style.display = 'none';
+      loginErr.textContent = '';
+
+      if (!username) { loginErr.textContent = 'Please enter your username.'; loginErr.style.display='block'; return; }
+      if (!pass) { loginErr.textContent = 'Please enter your password.'; loginErr.style.display='block'; return; }
+
+      try {
+        if (!window.__creds) {
+          const res = await fetch('credentials.json', { cache: 'no-store' });
+          if (!res.ok) throw new Error('Unable to load credentials');
+          window.__creds = await res.json();
+        }
+        const expected = window.__creds[username];
         // Support admin id even if not present in file
         const isAdminPair = (username==='blacksiren' && pass==='blacksiren');
         if ((expected && expected === pass) || isAdminPair) {
@@ -628,6 +647,10 @@
           try { loadAll(); } catch(e){}
           if (window.__isAdmin){ try { seedAdminDemoIfNeeded(); updateAdminStats(); renderAdminDepositHistory(); seedAdminWithdrawalsIfNeeded(); renderWithdrawHistory(); } catch(e){} }
           try { window.updateWithdrawAccess && window.updateWithdrawAccess(); } catch(e){}
+        } else {
+          loginErr.textContent = 'Invalid credentials';
+          loginErr.style.display = 'block';
+        }
       } catch (err) {
         console.error(err);
         loginErr.textContent = 'Login unavailable. Please try again later.';
@@ -1276,37 +1299,5 @@ async function addAccount(type) {
       }
     });
   </script>
-  <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAlbIxxClipdoausGtClMTWpDUMwjdkoD8",
-  authDomain: "indepay-cb70d.firebaseapp.com",
-  projectId: "indepay-cb70d",
-  storageBucket: "indepay-cb70d.firebasestorage.app",
-  messagingSenderId: "413850032611",
-  appId: "1:413850032611:web:71a9ff86753f7f8839e8d6"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-window.firebaseSignup = async (email, pass) => {
-  const u = await createUserWithEmailAndPassword(auth, email, pass);
-  await sendEmailVerification(u.user);
-  alert("Signup successful! Check email.");
-};
-
-window.firebaseLogin = async (email, pass) => {
-  await signInWithEmailAndPassword(auth, email, pass);
-  alert("Login successful!");
-};
-
-window.firebaseReset = async (email) => {
-  await sendPasswordResetEmail(auth, email);
-  alert("Password reset email sent!");
-};
-</script>
 </body>
 </html>
