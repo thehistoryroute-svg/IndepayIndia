@@ -1254,11 +1254,12 @@ async function addAccount(type) {
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
   import { getAuth, 
-           signInWithEmailAndPassword, 
-           createUserWithEmailAndPassword, 
-           sendPasswordResetEmail, 
-           signOut, 
-           onAuthStateChanged } 
+         signInWithEmailAndPassword, 
+         createUserWithEmailAndPassword, 
+         sendPasswordResetEmail, 
+         sendEmailVerification,
+         signOut, 
+         onAuthStateChanged } 
   from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -1285,10 +1286,19 @@ async function addAccount(type) {
     errorBox.style.display = "none";
 
     signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        loginPage.style.display = "none";
-        dashboard.style.display = "block";
-      })
+      .then((userCredential) => {
+
+  const user = userCredential.user;
+
+  if (user.emailVerified) {
+    loginPage.style.display = "none";
+    dashboard.style.display = "block";
+  } else {
+    alert("Please verify your email before login.");
+    signOut(auth);
+  }
+
+})
       .catch((error) => {
         errorBox.style.display = "block";
         errorBox.textContent = error.message;
@@ -1304,8 +1314,20 @@ if (signupBtn) {
     const password = document.getElementById("loginPass").value.trim();
 
     createUserWithEmailAndPassword(auth, email, password)
-      .then(() => alert("Account created successfully!"))
-      .catch((error) => alert(error.message));
+  .then((userCredential) => {
+
+    const user = userCredential.user;
+
+    // Send verification email
+    sendEmailVerification(user).then(() => {
+      alert("Verification email sent! Please check your inbox or Spam folder before login.");
+    });
+
+    // Logout immediately after signup
+    signOut(auth);
+
+  })
+  .catch((error) => alert(error.message));
   });
 }
 
@@ -1333,11 +1355,14 @@ if (logoutBtn) {
 }
 
   onAuthStateChanged(auth, (user) => {
-    if (user) {
-      loginPage.style.display = "none";
-      dashboard.style.display = "block";
-    }
-  });
+  if (user && user.emailVerified) {
+    loginPage.style.display = "none";
+    dashboard.style.display = "block";
+  } else {
+    dashboard.style.display = "none";
+    loginPage.style.display = "flex";
+  }
+});
 </script>
 </body>
 </html>
